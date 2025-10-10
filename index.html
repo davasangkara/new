@@ -47,8 +47,8 @@
     .row{ display:flex; gap:10px; flex-wrap:wrap; }
     .row>*{ flex:1 1 180px; }
     label{ color:#333; font-size:.9rem; display:block; margin-bottom:6px; }
-    input{ width:100%; padding:.55rem .65rem; border:1px solid #d7d7d7; border-radius:10px; font:inherit; }
-    input:focus{ outline:0; border-color:#111 }
+    input, select{ width:100%; padding:.55rem .65rem; border:1px solid #d7d7d7; border-radius:10px; font:inherit; }
+    input:focus, select:focus{ outline:0; border-color:#111 }
     .btn{ border:0; background:#111; color:#fff; padding:.55rem .9rem; border-radius:999px; cursor:pointer }
     .btn.secondary{ background:#eee; color:#111 }
     .btn.danger{ background:#d33 }
@@ -63,7 +63,7 @@
     .right{ text-align:right }
     .center{ text-align:center }
 
-    /* ====== GARIS ====== */
+    /* ====== GARIS (TIDAK DIUBAH) ====== */
     .rule{
       width:100%; height:1px; margin:10px 0;
       background:
@@ -121,24 +121,19 @@
       background-size: auto var(--eq-thick), auto var(--eq-thick);
       background-position: left 0, left calc(100% - var(--eq-thick));
     }
-    /* garis solid tipis (untuk paling bawah setelah email) */
     .rule-solid{
       width:100%; height:1px; margin:10px 0;
       background: var(--line);
     }
 
-    /* ====== L U N A S di satu baris dengan garis kiri-kanan ====== */
+    /* ====== L U N A S (tanpa bold/stroke) ====== */
     .paid-line{
       display:flex; align-items:center; justify-content:center;
-      gap:8px; margin:8px 0; font-weight:200;
+      gap:8px; margin:8px 0; font-weight:400; letter-spacing:.35rem; -webkit-text-stroke:0; text-shadow:none; color:#333;
     }
     .paid-line::before, .paid-line::after{
       content:""; flex:9; height:1px;
-      background: repeating-linear-gradient(
-        to right,
-        var(--line) 0 10px,
-        transparent 8px 14px
-      );
+      background: repeating-linear-gradient(to right, var(--line) 0 10px, transparent 8px 14px);
     }
 
     .hdr-line{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; font-size:.95rem }
@@ -158,8 +153,9 @@
     .sum .qty{ width:8%; text-align:right }
     .sum .amt{ width:32%; text-align:right; font-weight:500 }
 
-    /* tanggal dibuat kecil */
+    /* tanggal & catatan PPN kecil */
     #footDate{ font-size:.85rem; }
+    .ppn-note{ font-size:.82rem; }
 
     @media print{
       body{ background:#fff; padding:0 }
@@ -191,17 +187,31 @@
         <div><label>Ongkir (Rp)</label><input id="ongkir" type="number" value="0" oninput="render()"></div>
       </div>
 
-      <!-- TETAP ADA GARIS PEMBATAS ATAS, TAPI SETELAH INPUT PRODUK TIDAK ADA GARIS LAGI -->
       <div class="rule"></div>
 
-      <h4 style="margin:0 0 6px">Tambah Produk</h4>
+      <!-- ==== HANYA VARIAN + QTY + HARGA ==== -->
+      <h4 style="margin:0 0 6px">Tambah Produk Tic Tac</h4>
       <div class="row">
-        <div><label>Nama Produk</label><input id="pname" placeholder="Nama barang"></div>
-        <div><label>Deskripsi (opsional)</label><input id="pdesc" placeholder=""></div>
-      </div>
-      <div class="row">
-        <div><label>Qty</label><input id="pqty" type="number" min="1" value="1"></div>
-        <div><label>Harga Satuan (Rp)</label><input id="pprice" type="number" min="0" value="7400"></div>
+        <div>
+          <label>Varian</label>
+          <select id="variant">
+            <option value="Dua Kelinci Tic Tac Pilus Mix 80 g">Dua Kelinci Tic Tac Pilus Mix 80 g</option>
+            <option value="Dua Kelinci Tic Tac Pilus Sapi Panggang 80 g">Dua Kelinci Tic Tac Pilus Sapi Panggang 80 g</option>
+            <option value="Dua Kelinci Tic Tac Pilus Mie Goreng 80 g">Dua Kelinci Tic Tac Pilus Mie Goreng 80 g</option>
+            <option value="Dua Kelinci Tic Tac Pilus Rumput Laut 80 g">Dua Kelinci Tic Tac Pilus Rumput Laut 80 g</option>
+            <option value="Dua Kelinci Tic Tac Pilus Pedas 80 g">Dua Kelinci Tic Tac Pilus Pedas 80 g</option>
+            <option value="Dua Kelinci Tic Tac Pilus Ayam Bawang 80 g">Dua Kelinci Tic Tac Pilus Ayam Bawang 80 g</option>
+            <option value="Dua Kelinci Tic Tac Pilus Original 80 g">Dua Kelinci Tic Tac Pilus Original 80 g</option>
+          </select>
+        </div>
+        <div>
+          <label>Qty</label>
+          <input id="pqty" type="number" min="1" value="1">
+        </div>
+        <div>
+          <label>Harga Satuan (Rp)</label>
+          <input id="pprice" type="number" min="0" value="0" placeholder="contoh: 7400">
+        </div>
         <div style="display:flex;align-items:flex-end;gap:.5rem;flex-wrap:wrap">
           <button class="btn" onclick="addItem()">Tambah</button>
           <button class="btn secondary" onclick="clearForm()">Reset</button>
@@ -209,14 +219,12 @@
         </div>
       </div>
 
-      <!-- *** DIHAPUS: GARIS DI BAWAH SETELAH INPUT PRODUK *** -->
-      <!-- <div class="rule"></div> -->
+      <div class="rule"></div>
 
-      <div class="row" style="margin-top:10px">
+      <div class="row">
         <div><label>Total Diskon (Rp)</label><input id="diskon" type="number" value="0" oninput="render()"></div>
         <div><label>Voucher (Rp)</label><input id="voucher" type="number" value="0" oninput="render()"></div>
       </div>
-      <p class="hint">Atur rapatnya "=" di <code>:root</code> → <code>--eq-seg</code>, <code>--eq-gap</code>, <code>--eq-line-gap</code>, <code>--eq-thick</code>.</p>
 
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         <button class="btn" onclick="window.print()">Print / Simpan PDF</button>
@@ -254,9 +262,7 @@
 
         <!-- "=" di atas & bawah Ref -->
         <div class="rule-equals"></div>
-
         <div class="muted">Ref. <span id="refBlock"></span></div>
-
         <div class="rule-equals"></div>
 
         <table>
@@ -271,19 +277,13 @@
           <tbody id="itemsBody"></tbody>
         </table>
 
-
         <table class="sum" id="sumTable"></table>
 
-        <p class="muted" style="margin-top:4px; font-size:.95rem">*Harga yang tertera sudah termasuk PPN</p>
+        <p class="muted ppn-note" style="margin-top:4px">*Harga yang tertera sudah termasuk PPN</p>
 
-       
-
-        <!-- LUNAS jadi satu baris dengan garis kiri-kanan -->
+        <!-- LUNAS + garis "====" di bawah -->
         <div class="paid-line">L U N A S</div>
         <div class="rule-equals" style="margin:6px 0;"></div>
-
-
-        <!-- tidak ada rule tambahan di sini supaya jarak tetap rapat -->
 
         <div class="muted center" id="footDate"></div>
 
@@ -291,7 +291,6 @@
         <div class="center muted">Kritik &amp; Saran: 1500959</div>
         <div class="center muted">Email: alfacare@sat.co.id</div>
 
-        <!-- garis “--------” di bawah email -->
         <div class="rule-solid"></div>
       </div>
     </div>
@@ -323,20 +322,19 @@
       return {tgl:tanggalID(d), slot:`${String(start).padStart(2,'0')}:00 - ${String(end).padStart(2,'0')}:00`};
     }
 
+    // ====== Produk Tic Tac: varian + qty + harga ======
     function addItem(){
-      const name = document.getElementById('pname').value.trim();
-      if(!name) return;
-      const desc = document.getElementById('pdesc').value.trim();
+      const name = document.getElementById('variant').value;
       const qty  = parseInt(document.getElementById('pqty').value||'0',10);
       const price= parseInt(document.getElementById('pprice').value||'0',10);
-      items.push({name, desc, qty, price});
+      if(!name || qty<=0 || price<0) return;
+      items.push({name, desc:'', qty, price});
       clearForm(); render();
     }
     function clearForm(){
-      document.getElementById('pname').value='';
-      document.getElementById('pdesc').value='';
-      document.getElementById('pqty').value=1;
-      document.getElementById('pprice').value=7400;
+      document.getElementById('variant').selectedIndex = 0;
+      document.getElementById('pqty').value = 1;
+      document.getElementById('pprice').value = 0;
     }
     function resetAll(){
       items.length=0;
@@ -364,9 +362,7 @@
         const line = it.qty * it.price;
         tbody.insertAdjacentHTML('beforeend', `
           <tr>
-            <td class="name">
-              ${it.name}${it.desc?`<div class="muted" style="font-size:.93rem">${it.desc}</div>`:''}
-            </td>
+            <td class="name">${it.name}</td>
             <td class="qty">${it.qty}</td>
             <td class="price">${rupiah(it.price)}</td>
             <td class="total">${rupiah(line)}</td>
