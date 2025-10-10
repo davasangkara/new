@@ -13,13 +13,24 @@
       --line:#e1e1e1;
       --accent:#f4a300;
 
-      /* Garis putus-putus "---- ----" */
+      /* Garis putus “---- ----” (utama) */
       --dash:5;
       --gap:5;
 
-      /* Garis akhir titik-titik (bawah) */
+      /* Garis mini antar item */
+      --mdash:12;
+      --mgap:7;
+
+      /* Garis titik tebal (info bawah) */
       --dot:3;
       --dotgap:5;
+
+      /* Garis “= = = =” */
+      --eq-seg:3px;
+      --eq-gap:5px;
+      --eq-line-gap:4px;
+      --eq-thick:1px;
+      --eq-color:#dcdcdc;
     }
 
     *{box-sizing:border-box;}
@@ -64,7 +75,21 @@
       background-repeat: repeat-x;
       background-position: left center;
     }
-    /* Titik-titik tebal (sebelum info bawah) */
+    /* Garis mini antar item */
+    .rule--mini{
+      width:100%; height:1px; margin:6px 0;
+      background:
+        linear-gradient(
+          to right,
+          var(--line) 0 calc(var(--mdash)*1px),
+          transparent 0 calc((var(--mdash) + var(--mgap))*1px)
+        );
+      background-size: calc((var(--mdash) + var(--mgap))*1px) 1px;
+      background-repeat: repeat-x;
+      background-position: left center;
+      opacity:.9;
+    }
+    /* Garis titik tebal (bawah) */
     .rule-strong{
       width:100%; height:2px; margin:12px 0;
       background:
@@ -76,6 +101,27 @@
       background-size: calc((var(--dot) + var(--dotgap))*1px) 2px;
       background-repeat: repeat-x;
       background-position: left center;
+    }
+    /* Garis “= = = =” */
+    .rule-equals{
+      position:relative;
+      width:100%;
+      height:calc((var(--eq-thick)*2) + var(--eq-line-gap));
+      margin:10px 0;
+      background-image:
+        repeating-linear-gradient(
+          to right,
+          var(--eq-color) 0 var(--eq-seg),
+          transparent var(--eq-seg) calc(var(--eq-seg) + var(--eq-gap))
+        ),
+        repeating-linear-gradient(
+          to right,
+          var(--eq-color) 0 var(--eq-seg),
+          transparent var(--eq-seg) calc(var(--eq-seg) + var(--eq-gap))
+        );
+      background-repeat: repeat-x, repeat-x;
+      background-size: auto var(--eq-thick), auto var(--eq-thick);
+      background-position: left 0, left calc(100% - var(--eq-thick));
     }
     /* Garis solid tipis paling bawah */
     .rule-solid{ width:100%; height:1px; margin:10px 0; background: var(--line); }
@@ -97,7 +143,7 @@
     .sum .qty{ width:8%; text-align:right }
     .sum .amt{ width:32%; text-align:right; font-weight:500 }
 
-    /* L U N A S – tanpa bold/stroke, diapit garis putus */
+    /* L U N A S – tanpa bold/stroke, diapit garis putus; ada “= = = =” setelahnya */
     .paid-line{
       display:flex; align-items:center; justify-content:center;
       gap:8px; margin:8px 0; font-weight:400; letter-spacing:.35rem; color:#5a5a5a;
@@ -116,7 +162,7 @@
       body{ background:#fff; padding:0 }
       .builder{ display:none !important }
       .receipt{ border-radius:0; box-shadow:none }
-      .rule, .rule-strong, .rule-solid{
+      .rule, .rule--mini, .rule-strong, .rule-equals, .rule-solid{
         -webkit-print-color-adjust: exact; print-color-adjust: exact;
       }
     }
@@ -206,13 +252,17 @@
           <div class="right" style="color:var(--accent);font-weight:600">Selesai</div>
         </div>
 
-        <div style="height:8px"></div>
+        <div class="rule"></div>
+
         <div class="center muted" id="storeBlock"></div>
 
-        <!-- Garis putus di atas & bawah REF -->
-        <div class="rule"></div>
+        <!-- Garis “= = = =” di atas Ref -->
+        <div class="rule-equals"></div>
+
         <div class="muted">Ref. <span id="refBlock"></span></div>
-        <div class="rule"></div>
+
+        <!-- Garis “= = = =” di bawah Ref -->
+        <div class="rule-equals"></div>
 
         <!-- Items -->
         <table>
@@ -234,10 +284,10 @@
 
         <p class="muted ppn-note" style="margin-top:4px">*Harga yang tertera sudah termasuk PPN</p>
 
-        <!-- L U N A S + garis atas & bawah -->
+        <!-- Garis putus, LUNAS, lalu garis “= = = =” -->
         <div class="rule"></div>
-        <div class="paid-line">LUNAS</div>
-        <div class="rule"></div>
+        <div class="paid-line">L U N A S</div>
+        <div class="rule-equals" style="margin:6px 0;"></div>
 
         <div class="muted center" id="footDate"></div>
 
@@ -253,7 +303,7 @@
   <script>
     const items = [];
 
-    // Format ribuan dengan koma (43,500)
+    // Format 43,500
     function rupiah(n){ return (Math.round(n)||0).toLocaleString('en-US'); }
 
     // Ref: S-YYMMDD-XXXXXX
@@ -267,7 +317,7 @@
       return `S-${y}${m}${dd}-${letters}`;
     }
 
-    // Tanggal header: Senin, 04 Agustus 2025 (sesuai waktu saat ini)
+    // Tanggal header: Senin, 04 Agustus 2025 (sesuai saat generate)
     function tanggalID(d){
       const days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
       const months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -275,17 +325,13 @@
       return `${days[d.getDay()]}, ${pad(d.getDate())} ${months[d.getMonth()]} ${d.getFullYear()}`;
     }
 
-    // Slot pickup: 2 jam dari sekarang, minimal mulai 08:00 (dibulatkan ke jam sekarang)
+    // Slot pickup: 2 jam dari sekarang, minimal mulai 08:00
     function pickupInfo(){
       const d = new Date();
       const pad = x => String(x).padStart(2,'0');
-
-      let startH = Math.max(d.getHours(), 8);   // minimal 08
-      let endH   = Math.min(startH + 2, 23);    // 2 jam ke depan
-
-      const tgl = tanggalID(d);
-      const slot = `${pad(startH)}:00 - ${pad(endH)}:00`;
-      return { tgl, slot };
+      let startH = Math.max(d.getHours(), 8);
+      let endH   = Math.min(startH + 2, 23);
+      return { tgl: tanggalID(d), slot: `${pad(startH)}:00 - ${pad(endH)}:00` };
     }
 
     // Tambah item (varian + qty + harga)
@@ -316,7 +362,6 @@
         `${document.getElementById('cabang').value}<br>${document.getElementById('alamat1').value}`;
       document.getElementById('datetime').innerHTML = `${p.tgl}<br>${p.slot}`;
 
-      // Info tengah: cabang → telp → area → alamat3
       document.getElementById('storeBlock').innerHTML =
         `${document.getElementById('cabang').value}<br>${document.getElementById('telepon').value}<br>${document.getElementById('kota').value}<br>${document.getElementById('alamat3').value}`;
 
@@ -337,6 +382,7 @@
             <td class="price">${rupiah(it.price)}</td>
             <td class="total">${rupiah(line)}</td>
           </tr>
+          <tr><td colspan="4"><div class="rule--mini"></div></td></tr>
         `);
         subtotalQty += it.qty;
         subtotal += line;
@@ -347,7 +393,6 @@
       const ongkirVal  = parseInt(document.getElementById('ongkir').value  || '0', 10);
       const total = subtotal - diskonVal - voucherVal + ongkirVal;
 
-      // Ringkasan (selalu tampilkan Biaya Pengiriman)
       document.getElementById('sumTable').innerHTML = `
         <tr><td class="lbl">Subtotal</td><td class="qty">${rupiah(subtotalQty)}</td><td class="amt">${rupiah(subtotal)}</td></tr>
         <tr><td class="lbl">Total Diskon</td><td></td><td class="amt">(${rupiah(diskonVal)})</td></tr>
@@ -356,18 +401,16 @@
         <tr><td class="lbl">Total</td><td></td><td class="amt">${rupiah(total)}</td></tr>
       `;
 
-      // Tgl. dd-mm-yyyy HH:MM:SS
       const d=new Date(), pad=x=>String(x).padStart(2,'0');
       document.getElementById('footDate').textContent =
         `Tgl. ${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }
 
-    // Pastikan garis ikut saat download PNG
+    // Pastikan semua garis ikut saat download PNG
     function downloadStruk(){
       const target = document.getElementById('receipt');
       target.style.webkitPrintColorAdjust = 'exact';
       target.style.printColorAdjust = 'exact';
-
       html2canvas(target, {
         scale: Math.max(2, window.devicePixelRatio || 2),
         backgroundColor: "#fff",
