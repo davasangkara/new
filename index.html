@@ -13,24 +13,13 @@
       --line:#e1e1e1;
       --accent:#f4a300;
 
-      /* Garis putus-putus "---- ----" (utama) */
-      --dash:5;   /* panjang strip */
-      --gap:5;    /* jarak strip */
+      /* Garis putus-putus "---- ----" */
+      --dash:5;
+      --gap:5;
 
-      /* Garis mini per item */
-      --mdash:12;
-      --mgap:7;
-
-      /* Garis akhir titik-titik (lebih tebal) */
+      /* Garis akhir titik-titik (bawah) */
       --dot:3;
       --dotgap:5;
-
-      /* ====== Garis "= = = = =" ====== */
-      --eq-seg:3px;       /* panjang setiap '=' */
-      --eq-gap:5px;       /* jarak antar '=' */
-      --eq-line-gap:4px;  /* jarak vertikal antar 2 garis '=' */
-      --eq-thick:1px;     /* ketebalan garis '=' */
-      --eq-color:#dcdcdc; /* warna garis '=' */
     }
 
     *{box-sizing:border-box;}
@@ -52,7 +41,6 @@
     .btn{ border:0; background:#111; color:#fff; padding:.55rem .9rem; border-radius:999px; cursor:pointer }
     .btn.secondary{ background:#eee; color:#111 }
     .btn.danger{ background:#d33 }
-    .hint{ color:#666; font-size:.85rem; }
 
     /* ====== STRUK ====== */
     .receipt{ background:#fff; border-radius:14px; box-shadow:0 1px 6px rgba(0,0,0,.06) }
@@ -63,7 +51,7 @@
     .right{ text-align:right }
     .center{ text-align:center }
 
-    /* ====== GARIS (TIDAK DIUBAH) ====== */
+    /* Garis putus (utama) */
     .rule{
       width:100%; height:1px; margin:10px 0;
       background:
@@ -76,19 +64,7 @@
       background-repeat: repeat-x;
       background-position: left center;
     }
-    .rule--mini{
-      width:100%; height:1px; margin:6px 0;
-      background:
-        linear-gradient(
-          to right,
-          var(--line) 0 calc(var(--mdash)*1px),
-          transparent 0 calc((var(--mdash) + var(--mgap))*1px)
-        );
-      background-size: calc((var(--mdash) + var(--mgap))*1px) 1px;
-      background-repeat: repeat-x;
-      background-position: left center;
-      opacity:.9;
-    }
+    /* Titik-titik tebal (sebelum info bawah) */
     .rule-strong{
       width:100%; height:2px; margin:12px 0;
       background:
@@ -101,40 +77,8 @@
       background-repeat: repeat-x;
       background-position: left center;
     }
-    .rule-equals{
-      position:relative;
-      width:100%;
-      height:calc((var(--eq-thick)*2) + var(--eq-line-gap));
-      margin:10px 0;
-      background-image:
-        repeating-linear-gradient(
-          to right,
-          var(--eq-color) 0 var(--eq-seg),
-          transparent var(--eq-seg) calc(var(--eq-seg) + var(--eq-gap))
-        ),
-        repeating-linear-gradient(
-          to right,
-          var(--eq-color) 0 var(--eq-seg),
-          transparent var(--eq-seg) calc(var(--eq-seg) + var(--eq-gap))
-        );
-      background-repeat: repeat-x, repeat-x;
-      background-size: auto var(--eq-thick), auto var(--eq-thick);
-      background-position: left 0, left calc(100% - var(--eq-thick));
-    }
-    .rule-solid{
-      width:100%; height:1px; margin:10px 0;
-      background: var(--line);
-    }
-
-    /* ====== L U N A S (tanpa bold/stroke) ====== */
-    .paid-line{
-      display:flex; align-items:center; justify-content:center;
-      gap:8px; margin:8px 0; font-weight:400; letter-spacing:.35rem; -webkit-text-stroke:0; text-shadow:none; color:#333;
-    }
-    .paid-line::before, .paid-line::after{
-      content:""; flex:9; height:1px;
-      background: repeating-linear-gradient(to right, var(--line) 0 10px, transparent 8px 14px);
-    }
+    /* Garis solid tipis paling bawah */
+    .rule-solid{ width:100%; height:1px; margin:10px 0; background: var(--line); }
 
     .hdr-line{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; font-size:.95rem }
     .hdr-line .left{ min-width:110px }
@@ -153,6 +97,17 @@
     .sum .qty{ width:8%; text-align:right }
     .sum .amt{ width:32%; text-align:right; font-weight:500 }
 
+    /* L U N A S – tanpa bold/stroke, diapit garis putus */
+    .paid-line{
+      display:flex; align-items:center; justify-content:center;
+      gap:8px; margin:8px 0; font-weight:400; letter-spacing:.35rem; color:#5a5a5a;
+      -webkit-text-stroke:0; text-shadow:none;
+    }
+    .paid-line::before, .paid-line::after{
+      content:""; flex:9; height:1px;
+      background: repeating-linear-gradient(to right, var(--line) 0 10px, transparent 8px 14px);
+    }
+
     /* tanggal & catatan PPN kecil */
     #footDate{ font-size:.85rem; }
     .ppn-note{ font-size:.82rem; }
@@ -161,7 +116,7 @@
       body{ background:#fff; padding:0 }
       .builder{ display:none !important }
       .receipt{ border-radius:0; box-shadow:none }
-      .rule, .rule--mini, .rule-strong, .rule-equals, .rule-solid{
+      .rule, .rule-strong, .rule-solid{
         -webkit-print-color-adjust: exact; print-color-adjust: exact;
       }
     }
@@ -175,43 +130,38 @@
       <h3 style="margin:0 0 8px">Pembuat Struk</h3>
       <div class="row">
         <div><label>Nama Toko</label><input id="toko" value="ALFAMART"></div>
-        <div><label>Cabang/Area</label><input id="cabang" value="MANGRUM"></div>
-        <div><label>No. Toko</label><input id="telepon" value="082150506060"></div>
+        <div><label>Cabang/Area</label><input id="cabang" value="JELINDRO SAMBI K SBY"></div>
+        <div><label>No. Toko</label><input id="telepon" value="081380746865"></div>
       </div>
       <div class="row">
-        <div><label>Alamat 1</label><input id="alamat1" value="JL. PERIKANAN DARAT - KEC CIANJUR"></div>
-        <div><label>Alamat 2</label><input id="kota" value="KEL MUKA"></div>
+        <div><label>Alamat 1</label><input id="alamat1" value="JL. JELIDRO NO 107 - SAMBIKEREP"></div>
+        <div><label>Alamat 2</label><input id="kota" value="SAMBIKEREP, SAMBIKEREP"></div>
       </div>
       <div class="row">
-        <div><label>Alamat 3</label><input id="alamat3" value="CIANJUR, KAB. CIANJUR"></div>
+        <div><label>Alamat 3</label><input id="alamat3" value="JL. JELIDRO NO 107"></div>
         <div><label>Ongkir (Rp)</label><input id="ongkir" type="number" value="0" oninput="render()"></div>
       </div>
 
       <div class="rule"></div>
 
-      <!-- ==== HANYA VARIAN + QTY + HARGA ==== -->
-      <h4 style="margin:0 0 6px">Tambah Produk Tic Tac</h4>
+      <!-- Hanya varian + qty + harga -->
+      <h4 style="margin:0 0 6px">Tambah Produk</h4>
       <div class="row">
         <div>
           <label>Varian</label>
           <select id="variant">
-            <option value="Dua Kelinci Tic Tac Pilus Mix 80 g">Dua Kelinci Tic Tac Pilus Mix 80 g</option>
-            <option value="Dua Kelinci Tic Tac Pilus Sapi Panggang 80 g">Dua Kelinci Tic Tac Pilus Sapi Panggang 80 g</option>
-            <option value="Dua Kelinci Tic Tac Pilus Mie Goreng 80 g">Dua Kelinci Tic Tac Pilus Mie Goreng 80 g</option>
-            <option value="Dua Kelinci Tic Tac Pilus Rumput Laut 80 g">Dua Kelinci Tic Tac Pilus Rumput Laut 80 g</option>
-            <option value="Dua Kelinci Tic Tac Pilus Pedas 80 g">Dua Kelinci Tic Tac Pilus Pedas 80 g</option>
-            <option value="Dua Kelinci Tic Tac Pilus Ayam Bawang 80 g">Dua Kelinci Tic Tac Pilus Ayam Bawang 80 g</option>
-            <option value="Dua Kelinci Tic Tac Pilus Original 80 g">Dua Kelinci Tic Tac Pilus Original 80 g</option>
+            <option>SunCo Minyak Goreng Pouch 2 L</option>
+            <option>Dua Kelinci Tic Tac Pilus Mix 80 g</option>
+            <option>Dua Kelinci Tic Tac Pilus Sapi Panggang 80 g</option>
+            <option>Dua Kelinci Tic Tac Pilus Mie Goreng 80 g</option>
+            <option>Dua Kelinci Tic Tac Pilus Rumput Laut 80 g</option>
+            <option>Dua Kelinci Tic Tac Pilus Pedas 80 g</option>
+            <option>Dua Kelinci Tic Tac Pilus Ayam Bawang 80 g</option>
+            <option>Dua Kelinci Tic Tac Pilus Original 80 g</option>
           </select>
         </div>
-        <div>
-          <label>Qty</label>
-          <input id="pqty" type="number" min="1" value="1">
-        </div>
-        <div>
-          <label>Harga Satuan (Rp)</label>
-          <input id="pprice" type="number" min="0" value="0" placeholder="contoh: 7400">
-        </div>
+        <div><label>Qty</label><input id="pqty" type="number" min="1" value="1"></div>
+        <div><label>Harga Satuan (Rp)</label><input id="pprice" type="number" min="0" value="0" placeholder="contoh: 43500"></div>
         <div style="display:flex;align-items:flex-end;gap:.5rem;flex-wrap:wrap">
           <button class="btn" onclick="addItem()">Tambah</button>
           <button class="btn secondary" onclick="clearForm()">Reset</button>
@@ -256,15 +206,15 @@
           <div class="right" style="color:var(--accent);font-weight:600">Selesai</div>
         </div>
 
-        <div style="height:6px"></div>
-
+        <div style="height:8px"></div>
         <div class="center muted" id="storeBlock"></div>
 
-        <!-- "=" di atas & bawah Ref -->
-        <div class="rule-equals"></div>
+        <!-- Garis putus di atas & bawah REF -->
+        <div class="rule"></div>
         <div class="muted">Ref. <span id="refBlock"></span></div>
-        <div class="rule-equals"></div>
+        <div class="rule"></div>
 
+        <!-- Items -->
         <table>
           <thead>
             <tr>
@@ -277,13 +227,17 @@
           <tbody id="itemsBody"></tbody>
         </table>
 
+        <div class="rule"></div>
+
+        <!-- Ringkasan -->
         <table class="sum" id="sumTable"></table>
 
         <p class="muted ppn-note" style="margin-top:4px">*Harga yang tertera sudah termasuk PPN</p>
 
-        <!-- LUNAS + garis "====" di bawah -->
-        <div class="paid-line">L U N A S</div>
-        <div class="rule-equals" style="margin:6px 0;"></div>
+        <!-- L U N A S + garis atas & bawah -->
+        <div class="rule"></div>
+        <div class="paid-line">LUNAS</div>
+        <div class="rule"></div>
 
         <div class="muted center" id="footDate"></div>
 
@@ -299,8 +253,10 @@
   <script>
     const items = [];
 
-    function rupiah(n){ return (Math.round(n)||0).toLocaleString('id-ID'); }
+    // Format ribuan dengan koma (43,500)
+    function rupiah(n){ return (Math.round(n)||0).toLocaleString('en-US'); }
 
+    // Ref: S-YYMMDD-XXXXXX
     function genRef(){
       const d = new Date();
       const pad = x => String(x).padStart(2,'0');
@@ -310,25 +266,35 @@
       const letters = Array.from({length:6},()=> String.fromCharCode(65+Math.floor(Math.random()*26))).join('');
       return `S-${y}${m}${dd}-${letters}`;
     }
+
+    // Tanggal header: Senin, 04 Agustus 2025 (sesuai waktu saat ini)
     function tanggalID(d){
       const days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
       const months=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-      return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-    }
-    function pickupInfo(){
-      const d = new Date();
-      const start = d.getHours();
-      const end = Math.min(start+2,23);
-      return {tgl:tanggalID(d), slot:`${String(start).padStart(2,'0')}:00 - ${String(end).padStart(2,'0')}:00`};
+      const pad = x => String(x).padStart(2,'0');
+      return `${days[d.getDay()]}, ${pad(d.getDate())} ${months[d.getMonth()]} ${d.getFullYear()}`;
     }
 
-    // ====== Produk Tic Tac: varian + qty + harga ======
+    // Slot pickup: 2 jam dari sekarang, minimal mulai 08:00 (dibulatkan ke jam sekarang)
+    function pickupInfo(){
+      const d = new Date();
+      const pad = x => String(x).padStart(2,'0');
+
+      let startH = Math.max(d.getHours(), 8);   // minimal 08
+      let endH   = Math.min(startH + 2, 23);    // 2 jam ke depan
+
+      const tgl = tanggalID(d);
+      const slot = `${pad(startH)}:00 - ${pad(endH)}:00`;
+      return { tgl, slot };
+    }
+
+    // Tambah item (varian + qty + harga)
     function addItem(){
       const name = document.getElementById('variant').value;
       const qty  = parseInt(document.getElementById('pqty').value||'0',10);
       const price= parseInt(document.getElementById('pprice').value||'0',10);
       if(!name || qty<=0 || price<0) return;
-      items.push({name, desc:'', qty, price});
+      items.push({name, qty, price});
       clearForm(); render();
     }
     function clearForm(){
@@ -347,13 +313,17 @@
     function render(){
       const p = pickupInfo();
       document.getElementById('pickupBlock').innerHTML =
-        `${document.getElementById('alamat1').value}<br>${document.getElementById('kota').value}`;
+        `${document.getElementById('cabang').value}<br>${document.getElementById('alamat1').value}`;
       document.getElementById('datetime').innerHTML = `${p.tgl}<br>${p.slot}`;
+
+      // Info tengah: cabang → telp → area → alamat3
       document.getElementById('storeBlock').innerHTML =
-        `${document.getElementById('toko').value} ${document.getElementById('cabang').value}<br>${document.getElementById('telepon').value}<br>${document.getElementById('alamat3').value}<br>${document.getElementById('alamat1').value}`;
+        `${document.getElementById('cabang').value}<br>${document.getElementById('telepon').value}<br>${document.getElementById('kota').value}<br>${document.getElementById('alamat3').value}`;
+
       if(!render._ref) render._ref = genRef();
       document.getElementById('refBlock').textContent = render._ref;
 
+      // Items
       const tbody = document.getElementById('itemsBody');
       tbody.innerHTML = '';
       let subtotalQty = 0, subtotal = 0;
@@ -367,7 +337,6 @@
             <td class="price">${rupiah(it.price)}</td>
             <td class="total">${rupiah(line)}</td>
           </tr>
-          <tr><td colspan="4"><div class="rule--mini"></div></td></tr>
         `);
         subtotalQty += it.qty;
         subtotal += line;
@@ -378,22 +347,34 @@
       const ongkirVal  = parseInt(document.getElementById('ongkir').value  || '0', 10);
       const total = subtotal - diskonVal - voucherVal + ongkirVal;
 
+      // Ringkasan (selalu tampilkan Biaya Pengiriman)
       document.getElementById('sumTable').innerHTML = `
         <tr><td class="lbl">Subtotal</td><td class="qty">${rupiah(subtotalQty)}</td><td class="amt">${rupiah(subtotal)}</td></tr>
         <tr><td class="lbl">Total Diskon</td><td></td><td class="amt">(${rupiah(diskonVal)})</td></tr>
         <tr><td class="lbl">Voucher</td><td></td><td class="amt">(${rupiah(voucherVal)})</td></tr>
-        ${ongkirVal?`<tr><td class="lbl">Biaya Pengiriman</td><td></td><td class="amt">${rupiah(ongkirVal)}</td></tr>`:''}
+        <tr><td class="lbl">Biaya Pengiriman</td><td></td><td class="amt">${rupiah(ongkirVal)}</td></tr>
         <tr><td class="lbl">Total</td><td></td><td class="amt">${rupiah(total)}</td></tr>
       `;
 
+      // Tgl. dd-mm-yyyy HH:MM:SS
       const d=new Date(), pad=x=>String(x).padStart(2,'0');
       document.getElementById('footDate').textContent =
         `Tgl. ${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }
 
+    // Pastikan garis ikut saat download PNG
     function downloadStruk(){
       const target = document.getElementById('receipt');
-      html2canvas(target,{scale:2,backgroundColor:"#fff"}).then(canvas=>{
+      target.style.webkitPrintColorAdjust = 'exact';
+      target.style.printColorAdjust = 'exact';
+
+      html2canvas(target, {
+        scale: Math.max(2, window.devicePixelRatio || 2),
+        backgroundColor: "#fff",
+        useCORS: true,
+        imageTimeout: 0,
+        logging: false
+      }).then(canvas=>{
         const link=document.createElement('a');
         link.download='Struk_Alfamart.png';
         link.href=canvas.toDataURL('image/png');
